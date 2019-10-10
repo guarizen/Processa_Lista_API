@@ -2,9 +2,8 @@
 using System.Net;
 using System.IO;
 using Newtonsoft.Json;
-using System.Text;
 
-namespace ConsultaAPI02
+namespace FaturamentoAutomatico
 {
     class Program
     {
@@ -12,10 +11,10 @@ namespace ConsultaAPI02
         {
             try
             {
-                var requisicaoWeb = WebRequest.CreateHttp("http://189.113.4.250:888/api/millenium!pillow/movimentacao/lista_dap?filial=16&$format=json");
+                var requisicaoWeb = WebRequest.CreateHttp("http://189.113.4.250:888/api/millenium!pillow/prefaturamentos/lista_fat_auto?$format=json");
                 requisicaoWeb.Method = "GET";
                 requisicaoWeb.Headers.Add("Authorization", $"Basic YWRtaW5pc3RyYXRvcjp2dGFUUFJAMjAxOSoq");
-                requisicaoWeb.UserAgent = "RequisicaoAPIGET";
+                requisicaoWeb.UserAgent = "RequisicaoAPIGETPrefat";
                 requisicaoWeb.Timeout = 1300000;
 
                 using (var resposta = requisicaoWeb.GetResponse())
@@ -25,12 +24,12 @@ namespace ConsultaAPI02
                     object objResponse = reader.ReadToEnd();
                     var statusCodigo = ((System.Net.HttpWebResponse)resposta).StatusCode;
 
-                    Pedidos Pedidov = JsonConvert.DeserializeObject<Pedidos>(objResponse.ToString());
+                    ListaPrefaturamentos Prefat = JsonConvert.DeserializeObject<ListaPrefaturamentos>(objResponse.ToString());
 
-                    foreach (var pv in Pedidov.Value)
+                    foreach (var pref in Prefat.Value)
                     {
                         try {
-                            HttpWebRequest request = (HttpWebRequest)WebRequest.Create("http://189.113.4.250:888/api/millenium/pedido_venda/reserva_estoque");
+                            HttpWebRequest request = (HttpWebRequest)WebRequest.Create("http://189.113.4.250:888/api/millenium_log/picking/faturar");
                             request.Method = "POST";
                             request.ContentType = "application/json";
                             request.Headers.Add("Authorization", $"Basic YWRtaW5pc3RyYXRvcjp2dGFUUFJAMjAxOSoq");
@@ -40,9 +39,9 @@ namespace ConsultaAPI02
 
                             using (var streamWriter = new StreamWriter(request.GetRequestStream()))
                             {
-                                var PostPedido = JsonConvert.SerializeObject(pv.Pedidov);
+                                var PostPrefat = JsonConvert.SerializeObject(pref.Numero);
 
-                                var DadosPost = "[{" + "\"pedidov\"" + ":" + PostPedido + "}]";
+                                var DadosPost = "{" + "\"numero\"" + ":" + PostPrefat + "}";
 
                                 streamWriter.Write(DadosPost);
                                 streamWriter.Flush();
@@ -57,7 +56,7 @@ namespace ConsultaAPI02
                                 var statusResposta = ((System.Net.HttpWebResponse)respostaPost).StatusCode;
                                 var post = JsonConvert.DeserializeObject<Post>(objResponsePost.ToString());
 
-                                Console.WriteLine($"Processado - Pedidov: {pv.Pedidov}"+" "+ $"Status: {(int)statusResposta}" + " - " + $"{statusResposta}");
+                                Console.WriteLine($"Processado - Faturamento: {pref.Numero}"+" "+ $"Status: {(int)statusResposta}" + " - " + $"{statusResposta}");
                                 streamPost.Close();
                                 respostaPost.Close();
                             }

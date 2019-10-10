@@ -4,9 +4,9 @@ using System.Globalization;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Converters;
 
-namespace ConsultaAPI02
+namespace FaturamentoAutomatico
 {
-    public partial class Pedidos
+    public partial class ListaPrefaturamentos
     {
         [JsonProperty("odata.metadata")]
         public Uri OdataMetadata { get; set; }
@@ -15,23 +15,23 @@ namespace ConsultaAPI02
         public long OdataCount { get; set; }
 
         [JsonProperty("value")]
-        public List<Value> Value { get; set; }
+        public Value[] Value { get; set; }
     }
 
     public partial class Value
     {
-        [JsonProperty("pedidov")]
-        public long Pedidov { get; set; }
+        [JsonProperty("numero")]
+        public string Numero { get; set; }
     }
 
-    public partial class Pedidos
+    public partial class ListaPrefaturamentos
     {
-        public static Pedidos FromJson(string json) => JsonConvert.DeserializeObject<Pedidos>(json, ConsultaAPI02.Converter.Settings);
+        public static ListaPrefaturamentos FromJson(string json) => JsonConvert.DeserializeObject<ListaPrefaturamentos>(json, FaturamentoAutomatico.Converter.Settings);
     }
 
     public static class Serialize
     {
-        public static string ToJson(this Pedidos self) => JsonConvert.SerializeObject(self, ConsultaAPI02.Converter.Settings);
+        public static string ToJson(this ListaPrefaturamentos self) => JsonConvert.SerializeObject(self, FaturamentoAutomatico.Converter.Settings);
     }
 
     internal static class Converter
@@ -41,9 +41,9 @@ namespace ConsultaAPI02
             MetadataPropertyHandling = MetadataPropertyHandling.Ignore,
             DateParseHandling = DateParseHandling.None,
             Converters =
-                                {
-                                    new IsoDateTimeConverter { DateTimeStyles = DateTimeStyles.AssumeUniversal }
-                                },
+            {
+                new IsoDateTimeConverter { DateTimeStyles = DateTimeStyles.AssumeUniversal }
+            },
         };
     }
 }
