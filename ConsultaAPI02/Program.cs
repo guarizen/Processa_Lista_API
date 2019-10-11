@@ -61,23 +61,29 @@ namespace FaturamentoAutomatico
                                 var statusResposta = ((System.Net.HttpWebResponse)respostaPost).StatusCode;
                                 var post = JsonConvert.DeserializeObject<Post>(objResponsePost.ToString());
 
-                                Console.WriteLine($"Processado - Faturamento: {pref.Numero}"+" "+ $"Status: {(int)statusResposta}" + " - " + $"{statusResposta}");
+                                Console.WriteLine($"Processado - Faturamento: {pref.Numero}" + " - " + $"Status: {(int)statusResposta}" + " - " + $"{statusResposta}");
                                 streamPost.Close();
                                 respostaPost.Close();
                             }
 
-                            Console.WriteLine("Codigo Retorno API: " + statusCodigo);
                             Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData);
-                            string nomeArquivo = @"c:\Log\" + DateTimeOffset.Now.ToString("ddMMyyyy") + ".log";
-                            StreamWriter writer = new StreamWriter(nomeArquivo);
-                            writer.WriteLine($"Data: {DateTimeOffset.Now.ToString("dd/MM/yyyy HH:mm:ss")}" + " " + $"(Status: {(int)statusCodigo})" + " " + "Finalizada Execução!");
-                            writer.Close();
+                            string path = @"c:\log\" + DateTimeOffset.Now.ToString("ddMMyyyy") + ".log";
 
-                            reader.Close();
-                            streamDados.Close();
-                            resposta.Close();
-
-                            Console.WriteLine("Finalizada Execução!");
+                            if (!File.Exists(path))
+                            {
+                                string nomeArquivo1 = @"c:\Log\" + DateTimeOffset.Now.ToString("ddMMyyyy") + ".log";
+                                StreamWriter writer1 = new StreamWriter(nomeArquivo1);
+                                writer1.WriteLine($"Data: {DateTimeOffset.Now.ToString("dd/MM/yyyy HH:mm:ss")}" + " - " + $"Status: {(int)statusCodigo}" + " - " + $"Numero Pre-faturamento: {pref.Numero}" + " - " + $"Retorno Millennium: {statusCodigo}");
+                                writer1.Close();
+                            }
+                            else
+                            {
+                                using (StreamWriter sw = File.AppendText(path))
+                                {
+                                    sw.WriteLine($"Data: {DateTimeOffset.Now.ToString("dd/MM/yyyy HH:mm:ss")}" + " - " + $"Status: {(int)statusCodigo}" + " - " + $"Numero Pre-faturamento: {pref.Numero}" + " - " + $"Retorno Millennium: {statusCodigo}");
+                                    sw.Close();
+                                }
+                            }
                         }
                         catch (WebException e)
                         {
@@ -94,20 +100,21 @@ namespace FaturamentoAutomatico
                                     Console.WriteLine($"Error Code: {(int)respostaErr.StatusCode}" + " - " + $"{respostaErr.StatusDescription.ToString()}" + " - " + $"Numero Pre-faturamento: {pref.Numero}");
 
                                     Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData);
-                                    string path = @"c:\log\" + DateTimeOffset.Now.ToString("ddMMyyyy") + ".log";
+                                    string path = @"c:\Log\" + DateTimeOffset.Now.ToString("ddMMyyyy") + ".log";
 
                                     if (!File.Exists(path))
                                     {
                                         string nomeArquivo1 = @"c:\Log\" + DateTimeOffset.Now.ToString("ddMMyyyy") + ".log";
                                         StreamWriter writer1 = new StreamWriter(nomeArquivo1);
-                                        writer1.WriteLine($"Data: {DateTimeOffset.Now.ToString("dd/MM/yyyy HH:mm:ss")}" + " - " + $"Codigo Erro: {(int)respostaErr.StatusCode}" + " - " + $"Status: {e.Message}" + " - " + $"Numero Pre-faturamento: {pref.Numero}" + " - " + $"Retorno Millennium: {responseFromServer}");
+                                        writer1.WriteLine($"Data: {DateTimeOffset.Now.ToString("dd/MM/yyyy HH:mm:ss")}" + " - " + $"Status: {e.Message}" + " - " + $"Numero Pre-faturamento: {pref.Numero}" + " - " + $"Retorno Millennium: {responseFromServer}");
                                         writer1.Close();
                                     }
                                     else
                                     {
                                         using (StreamWriter sw = File.AppendText(path))
                                         {
-                                            sw.WriteLine($"Data: {DateTimeOffset.Now.ToString("dd/MM/yyyy HH:mm:ss")}" + " - " + $"Codigo Erro: {(int)respostaErr.StatusCode}" + " - " + $"Status: {e.Message}" + " - " + $"Numero Pre-faturamento: {pref.Numero}" + " - " + $"Retorno Millennium: {responseFromServer}");
+                                            sw.WriteLine($"Data: {DateTimeOffset.Now.ToString("dd/MM/yyyy HH:mm:ss")}" + " - " + $"Status: {e.Message}" + " - " + $"Numero Pre-faturamento: {pref.Numero}" + " - " + $"Retorno Millennium: {responseFromServer}");
+                                            sw.Close();
                                         }
                                     }   
                                     respostaErr.Close();
@@ -116,12 +123,26 @@ namespace FaturamentoAutomatico
                             }
                             else
                             {
-                                Console.WriteLine("Error: {0}", e.Status);
                                 Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData);
-                                string nomeArquivo1 = @"c:\Log\" + DateTimeOffset.Now.ToString("ddMMyyyy") + ".log";
-                                StreamWriter writer1 = new StreamWriter(nomeArquivo1);
-                                writer1.WriteLine($"Data: {DateTimeOffset.Now.ToString("dd/MM/yyyy HH:mm:ss")}" + " " + $"(Erro: {e.Message})" + " " + $"(Status: {e.Status})");
-                                writer1.Close();
+                                string path = @"c:\Log\" + DateTimeOffset.Now.ToString("ddMMyyyy") + ".log";
+
+                                if (!File.Exists(path))
+                                {
+                                    Console.WriteLine("Error: {0}", e.Status);
+
+                                    string nomeArquivo1 = @"c:\Log\" + DateTimeOffset.Now.ToString("ddMMyyyy") + ".log";
+                                    StreamWriter writer1 = new StreamWriter(nomeArquivo1);
+                                    writer1.WriteLine($"Data: {DateTimeOffset.Now.ToString("dd/MM/yyyy HH:mm:ss")}" + " " + $"(Erro: {e.Message})" + " " + $"(Status: {e.Status})");
+                                    writer1.Close();
+                                }
+                                else
+                                {
+                                    using (StreamWriter sw = File.AppendText(path))
+                                    {
+                                        sw.WriteLine($"Data: {DateTimeOffset.Now.ToString("dd/MM/yyyy HH:mm:ss")}" + " " + $"(Erro: {e.Message})" + " " + $"(Status: {e.Status})");
+                                        sw.Close();
+                                    }
+                                }
                             }
                         }
                     }
@@ -131,22 +152,53 @@ namespace FaturamentoAutomatico
             {
                 if (e.Status == WebExceptionStatus.ProtocolError)
                 {
-                    var resposta2 = (HttpWebResponse)e.Response;
-                    Console.WriteLine($"Errorcode: {(int)resposta2.StatusCode}" + " - " + $"{resposta2.StatusDescription.ToString()}");
                     Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData);
-                    string nomeArquivo = @"c:\Log\" + DateTimeOffset.Now.ToString("ddMMyyyy") + ".log";
-                    StreamWriter writer = new StreamWriter(nomeArquivo);
-                    writer.WriteLine($"Data: {DateTimeOffset.Now.ToString("dd/MM/yyyy HH:mm:ss")}"+ " " + $"(Codigo Erro: {(int)resposta2.StatusCode})" + " " + $"(Status: {e.Message})");
-                    writer.Close();
+                    string path = @"c:\Log\" + DateTimeOffset.Now.ToString("ddMMyyyy") + ".log";
+
+                    if (!File.Exists(path))
+                    {
+                        var resposta2 = (HttpWebResponse)e.Response;
+                        Console.WriteLine($"Errorcode: {(int)resposta2.StatusCode}" + " - " + $"{resposta2.StatusDescription.ToString()}");
+
+                        string nomeArquivo = @"c:\Log\" + DateTimeOffset.Now.ToString("ddMMyyyy") + ".log";
+                        StreamWriter writer = new StreamWriter(nomeArquivo);
+                        writer.WriteLine($"Data: {DateTimeOffset.Now.ToString("dd/MM/yyyy HH:mm:ss")}" + " " + $"(Codigo Erro: {(int)resposta2.StatusCode})" + " " + $"(Status: {e.Message})");
+                        writer.Close();
+                    }
+                    else
+                    {
+                        using (StreamWriter sw = File.AppendText(path))
+                        {
+                            var resposta2 = (HttpWebResponse)e.Response;
+                            Console.WriteLine($"Errorcode: {(int)resposta2.StatusCode}" + " - " + $"{resposta2.StatusDescription.ToString()}");
+
+                            sw.WriteLine($"Data: {DateTimeOffset.Now.ToString("dd/MM/yyyy HH:mm:ss")}" + " " + $"(Codigo Erro: {(int)resposta2.StatusCode})" + " " + $"(Status: {e.Message})");
+                            sw.Close();
+                        }
+                    }
                 }
                 else
                 {
-                    Console.WriteLine("Error: {0}", e.Status);
                     Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData);
-                    string nomeArquivo = @"c:\Log\" + DateTimeOffset.Now.ToString("ddMMyyyy") + ".log";
-                    StreamWriter writer = new StreamWriter(nomeArquivo);
-                    writer.WriteLine($"Data: {DateTimeOffset.Now.ToString("dd/MM/yyyy HH:mm:ss")}" + " " + $"(Erro: {e.Message})" + " " + $"(Status: {e.Status})");
-                    writer.Close();
+                    string path = @"c:\Log\" + DateTimeOffset.Now.ToString("ddMMyyyy") + ".log";
+
+                    if (!File.Exists(path))
+                    {
+                        Console.WriteLine("Error: {0}", e.Status);
+                        string nomeArquivo = @"c:\Log\" + DateTimeOffset.Now.ToString("ddMMyyyy") + ".log";
+                        StreamWriter writer = new StreamWriter(nomeArquivo);
+                        writer.WriteLine($"Data: {DateTimeOffset.Now.ToString("dd/MM/yyyy HH:mm:ss")}" + " " + $"(Erro: {e.Message})" + " " + $"(Status: {e.Status})");
+                        writer.Close();
+                    }
+                    else
+                    {
+                        using (StreamWriter sw = File.AppendText(path))
+                        {
+                            sw.WriteLine($"Data: {DateTimeOffset.Now.ToString("dd/MM/yyyy HH:mm:ss")}" + " " + $"(Erro: {e.Message})" + " " + $"(Status: {e.Status})");
+                            sw.Close();
+                        }
+                    }
+                    
                 }
                
             }
