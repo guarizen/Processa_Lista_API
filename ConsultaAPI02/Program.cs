@@ -9,6 +9,11 @@ namespace FaturamentoAutomatico
     {
         static void Main(string[] args)
         {
+            string pastalog = @"C:\Log";
+            if (!Directory.Exists(pastalog))
+            {
+                Directory.CreateDirectory(pastalog);
+            }
             try
             {
                 var requisicaoWeb = WebRequest.CreateHttp("http://189.113.4.250:888/api/millenium!pillow/prefaturamentos/lista_fat_auto?$format=json");
@@ -60,44 +65,66 @@ namespace FaturamentoAutomatico
                                 streamPost.Close();
                                 respostaPost.Close();
                             }
+
+                            Console.WriteLine("Codigo Retorno API: " + statusCodigo);
+                            Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData);
+                            string nomeArquivo = @"c:\Log\" + DateTimeOffset.Now.ToString("ddMMyyyy") + ".log";
+                            StreamWriter writer = new StreamWriter(nomeArquivo);
+                            writer.WriteLine($"Data: {DateTimeOffset.Now.ToString("dd/MM/yyyy HH:mm:ss")}" + " " + $"(Status: {(int)statusCodigo})" + " " + "Finalizada Execução!");
+                            writer.Close();
+
+                            reader.Close();
+                            streamDados.Close();
+                            resposta.Close();
+
+                            Console.WriteLine("Finalizada Execução!");
                         }
                         catch (WebException e)
                         {
                             if (e.Status == WebExceptionStatus.ProtocolError)
                             {
-                                var resposta2 = (HttpWebResponse)e.Response;
-                                Console.WriteLine($"Errorcode: {(int)resposta2.StatusCode}" + " - " + $"{resposta2.StatusDescription.ToString()}");
-                                Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData);
-                                string nomeArquivo1 = @"c:\log\" + DateTimeOffset.Now.ToString("ddMMyyyy") + ".log";
-                                StreamWriter writer1 = new StreamWriter(nomeArquivo1);
-                                writer1.WriteLine($"Data: {DateTimeOffset.Now.ToString("dd/MM/yyyy HH:mm:ss")}" + " " + $"(Codigo Erro: {(int)resposta2.StatusCode})" + " " + $"(Status: {e.Message})");
-                                writer1.Close();
+                                var respostaErr = (HttpWebResponse)e.Response;
+
+                                using (Stream dataStreamErr = respostaErr.GetResponseStream())
+                                {
+
+                                    StreamReader readerErr = new StreamReader(dataStreamErr);
+                                    string responseFromServer = readerErr.ReadToEnd();
+
+                                    Console.WriteLine($"Error Code: {(int)respostaErr.StatusCode}" + " - " + $"{respostaErr.StatusDescription.ToString()}" + " - " + $"Numero Pre-faturamento: {pref.Numero}");
+
+                                    Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData);
+                                    string path = @"c:\log\" + DateTimeOffset.Now.ToString("ddMMyyyy") + ".log";
+
+                                    if (!File.Exists(path))
+                                    {
+                                        string nomeArquivo1 = @"c:\Log\" + DateTimeOffset.Now.ToString("ddMMyyyy") + ".log";
+                                        StreamWriter writer1 = new StreamWriter(nomeArquivo1);
+                                        writer1.WriteLine($"Data: {DateTimeOffset.Now.ToString("dd/MM/yyyy HH:mm:ss")}" + " - " + $"Codigo Erro: {(int)respostaErr.StatusCode}" + " - " + $"Status: {e.Message}" + " - " + $"Numero Pre-faturamento: {pref.Numero}" + " - " + $"Retorno Millennium: {responseFromServer}");
+                                        writer1.Close();
+                                    }
+                                    else
+                                    {
+                                        using (StreamWriter sw = File.AppendText(path))
+                                        {
+                                            sw.WriteLine($"Data: {DateTimeOffset.Now.ToString("dd/MM/yyyy HH:mm:ss")}" + " - " + $"Codigo Erro: {(int)respostaErr.StatusCode}" + " - " + $"Status: {e.Message}" + " - " + $"Numero Pre-faturamento: {pref.Numero}" + " - " + $"Retorno Millennium: {responseFromServer}");
+                                        }
+                                    }   
+                                    respostaErr.Close();
+                                }
+                               
                             }
                             else
                             {
                                 Console.WriteLine("Error: {0}", e.Status);
                                 Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData);
-                                string nomeArquivo1 = @"c:\log\" + DateTimeOffset.Now.ToString("ddMMyyyy") + ".log";
+                                string nomeArquivo1 = @"c:\Log\" + DateTimeOffset.Now.ToString("ddMMyyyy") + ".log";
                                 StreamWriter writer1 = new StreamWriter(nomeArquivo1);
                                 writer1.WriteLine($"Data: {DateTimeOffset.Now.ToString("dd/MM/yyyy HH:mm:ss")}" + " " + $"(Erro: {e.Message})" + " " + $"(Status: {e.Status})");
                                 writer1.Close();
                             }
                         }
                     }
-
-
-                    Console.WriteLine("Codigo Retorno API: " + statusCodigo);
-                    Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData);
-                    string nomeArquivo = @"c:\log\" + DateTimeOffset.Now.ToString("ddMMyyyy") + ".log";
-                    StreamWriter writer = new StreamWriter(nomeArquivo);
-                    writer.WriteLine($"Data: {DateTimeOffset.Now.ToString("dd/MM/yyyy HH:mm:ss")}" + " " + $"(Status: {(int)statusCodigo})" + " " + "Finalizada Execução!");
-                    writer.Close();
-
-                    reader.Close();
-                    streamDados.Close();
-                    resposta.Close();
-
-                    Console.WriteLine("Finalizada Execução!");
                 }
             }
             catch (WebException e)
@@ -107,7 +134,7 @@ namespace FaturamentoAutomatico
                     var resposta2 = (HttpWebResponse)e.Response;
                     Console.WriteLine($"Errorcode: {(int)resposta2.StatusCode}" + " - " + $"{resposta2.StatusDescription.ToString()}");
                     Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData);
-                    string nomeArquivo = @"c:\log\" + DateTimeOffset.Now.ToString("ddMMyyyy") + ".log";
+                    string nomeArquivo = @"c:\Log\" + DateTimeOffset.Now.ToString("ddMMyyyy") + ".log";
                     StreamWriter writer = new StreamWriter(nomeArquivo);
                     writer.WriteLine($"Data: {DateTimeOffset.Now.ToString("dd/MM/yyyy HH:mm:ss")}"+ " " + $"(Codigo Erro: {(int)resposta2.StatusCode})" + " " + $"(Status: {e.Message})");
                     writer.Close();
@@ -116,14 +143,13 @@ namespace FaturamentoAutomatico
                 {
                     Console.WriteLine("Error: {0}", e.Status);
                     Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData);
-                    string nomeArquivo = @"c:\log\" + DateTimeOffset.Now.ToString("ddMMyyyy") + ".log";
+                    string nomeArquivo = @"c:\Log\" + DateTimeOffset.Now.ToString("ddMMyyyy") + ".log";
                     StreamWriter writer = new StreamWriter(nomeArquivo);
                     writer.WriteLine($"Data: {DateTimeOffset.Now.ToString("dd/MM/yyyy HH:mm:ss")}" + " " + $"(Erro: {e.Message})" + " " + $"(Status: {e.Status})");
                     writer.Close();
                 }
                
             }
-           // Console.ReadKey();
         }
     }
 }
