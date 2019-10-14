@@ -56,8 +56,7 @@ namespace FaturamentoAutomatico
                                 var DadosPost = "{" + "\"numero\"" + ":" + PostPrefat + "}";
 
                                 streamWriter.Write(DadosPost);
-                                streamWriter.Flush();
-                                streamWriter.Close();
+
                             }
 
                             //Comunicando com a API do Millennium e Aguardando o retorno.
@@ -70,8 +69,7 @@ namespace FaturamentoAutomatico
                                 var post = JsonConvert.DeserializeObject<Post>(objResponsePost.ToString());
 
                                 Console.WriteLine($"Processado - Faturamento: {pref.Numero}" + " - " + $"Status: {(int)statusResposta}" + " - " + $"{statusResposta}");
-                                streamPost.Close();
-                                respostaPost.Close();
+
                             }
 
                             //Verificando a pasta de Log. 
@@ -92,7 +90,6 @@ namespace FaturamentoAutomatico
                                 using (StreamWriter sw = File.AppendText(path))
                                 {
                                     sw.WriteLine($"Data: {DateTimeOffset.Now.ToString("dd/MM/yyyy HH:mm:ss")}" + " - " + $"Status: {(int)statusCodigo}" + " - " + $"Numero Pre-faturamento: {pref.Numero}" + " - " + $"Retorno Millennium: {statusCodigo}");
-                                    sw.Close();
                                 }
                             }
                         }
@@ -131,8 +128,6 @@ namespace FaturamentoAutomatico
                                             var DadosPost = "{" + "\"numero\"" + ":" + PostPrefat + "," + " " + "\"erro_fat_auto\"" + ":" + "\" " + PostErroFat + "\" " + "}";
 
                                             streamWriter.Write(DadosPost);
-                                            streamWriter.Flush();
-                                            streamWriter.Close();
                                         }
 
                                         //Comunicando com a API do Millennium e Aguardando o retorno, incluindo informações de log.
@@ -164,11 +159,9 @@ namespace FaturamentoAutomatico
                                                 {
                                                     Console.WriteLine($"Log Erro - Faturamento: {pref.Numero}" + " - " + $"Status: {(int)statusRespostaErro}" + " - " + $"{statusRespostaErro}");
                                                     sw.WriteLine($"Data: {DateTimeOffset.Now.ToString("dd/MM/yyyy HH:mm:ss")}" + " " + $"Log Erro - Pré-Faturamento: {pref.Numero}" + " - " + $"Status: {(int)statusRespostaErro}" + " - " + $"{statusRespostaErro}" + " " + $"{PostErroFat}");
-                                                    sw.Close();
                                                 }
                                             }
                                             streamPostErro.Close();
-                                            respostaPostErro.Close();
                                         }
                                     }
                                     catch (WebException e1)
@@ -200,7 +193,6 @@ namespace FaturamentoAutomatico
                                                     Console.WriteLine($"Errorcode: {(int)resposta3.StatusCode}" + " - " + $"{resposta3.StatusDescription.ToString()}");
 
                                                     sw.WriteLine($"Data: {DateTimeOffset.Now.ToString("dd/MM/yyyy HH:mm:ss")}" + " " + $"(Codigo Erro: {(int)resposta3.StatusCode})" + " " + $"(Status: {e1.Message})");
-                                                    sw.Close();
                                                 }
                                             }
                                         }
@@ -233,7 +225,6 @@ namespace FaturamentoAutomatico
                                     using (StreamWriter sw = File.AppendText(path))
                                     {
                                         sw.WriteLine($"Data: {DateTimeOffset.Now.ToString("dd/MM/yyyy HH:mm:ss")}" + " " + $"(Erro: {e.Message})" + " " + $"(Status: {e.Status})");
-                                        sw.Close();
                                     }
                                 }
                             }
@@ -271,7 +262,6 @@ namespace FaturamentoAutomatico
                             Console.WriteLine($"Errorcode: {(int)resposta2.StatusCode}" + " - " + $"{resposta2.StatusDescription.ToString()}");
 
                             sw.WriteLine($"Data: {DateTimeOffset.Now.ToString("dd/MM/yyyy HH:mm:ss")}" + " " + $"(Codigo Erro: {(int)resposta2.StatusCode})" + " " + $"(Status: {e.Message})");
-                            sw.Close();
                         }
                     }
                 }
@@ -297,7 +287,6 @@ namespace FaturamentoAutomatico
                         using (StreamWriter sw = File.AppendText(path))
                         {
                             sw.WriteLine($"Data: {DateTimeOffset.Now.ToString("dd/MM/yyyy HH:mm:ss")}" + " " + $"(Erro: {e.Message})" + " " + $"(Status: {e.Status})");
-                            sw.Close();
                         }
                     }
 
