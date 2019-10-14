@@ -205,10 +205,10 @@ namespace FaturamentoAutomatico
                                             }
                                         }
                                     }
-                                     
-                                 respostaErr.Close();
+
+                                    respostaErr.Close();
                                 }
-                               
+
                             }
                             //Recebida Exceção da API, porem sem retorno de Status.
                             else
@@ -300,9 +300,9 @@ namespace FaturamentoAutomatico
                             sw.Close();
                         }
                     }
-                    
+
                 }
-               
+
             }
         }
     }
