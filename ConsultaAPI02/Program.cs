@@ -9,10 +9,10 @@ namespace FaturamentoAutomatico
     {
         static void Main(string[] args)
         {
-            //Criar Diretório de Log
-            string pastalog = @"C:\Log";
-            if (!Directory.Exists(pastalog))
+            string pastalog = @"C:\Log\";
+            if (!File.Exists(pastalog))
             {
+                //Criar Diretório de Log
                 Directory.CreateDirectory(pastalog);
             }
             //Consulta API do Millennium, Buscando as informações da lista a faturar.
@@ -69,20 +69,28 @@ namespace FaturamentoAutomatico
                                 var post = JsonConvert.DeserializeObject<Post>(objResponsePost.ToString());
 
                                 Console.WriteLine($"Processado - Faturamento: {pref.Numero}" + " - " + $"Status: {(int)statusResposta}" + " - " + $"{statusResposta}");
-
+                                streamPost.Dispose();
                             }
 
                             //Verificando a pasta de Log. 
                             Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData);
-                            string path = @"c:\Log\" + DateTimeOffset.Now.ToString("ddMMyyyy") + ".log";
+                            string path = @"C:\Log\" + DateTimeOffset.Now.ToString("ddMMyyyy") + ".log";
 
                             //Verifica se o arquivo de Log não existe e inclui as informações.
                             if (!File.Exists(path))
                             {
-                                string nomeArquivo1 = @"c:\Log\" + DateTimeOffset.Now.ToString("ddMMyyyy") + ".log";
+                                DirectoryInfo dir = new DirectoryInfo(pastalog);
+
+                                foreach (FileInfo fi in dir.GetFiles())
+                                {
+                                    fi.Delete();
+                                }
+
+                                string nomeArquivo1 = @"C:\Log\" + DateTimeOffset.Now.ToString("ddMMyyyy") + ".log";
                                 StreamWriter writer1 = new StreamWriter(nomeArquivo1);
                                 writer1.WriteLine($"Data: {DateTimeOffset.Now.ToString("dd/MM/yyyy HH:mm:ss")}" + " - " + $"Status: {(int)statusCodigo}" + " - " + $"Numero Pre-faturamento: {pref.Numero}" + " - " + $"Retorno Millennium: {statusCodigo}");
                                 writer1.Close();
+
                             }
                             //Verifica se o arquivo de Log já existe e inclui as informações.
                             else
@@ -141,13 +149,20 @@ namespace FaturamentoAutomatico
 
                                             //Verificando a pasta de Log. 
                                             Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData);
-                                            string path = @"c:\Log\" + DateTimeOffset.Now.ToString("ddMMyyyy") + ".log";
+                                            string path = @"C:\Log\" + DateTimeOffset.Now.ToString("ddMMyyyy") + ".log";
 
                                             //Verifica se o arquivo de Log não existe e inclui as informações.
                                             if (!File.Exists(path))
                                             {
+                                                DirectoryInfo dir = new DirectoryInfo(pastalog);
+
+                                                foreach (FileInfo fi in dir.GetFiles())
+                                                {
+                                                    fi.Delete();
+                                                }
+
                                                 Console.WriteLine($"Log Erro - Faturamento: {pref.Numero}" + " - " + $"Status: {(int)statusRespostaErro}" + " - " + $"{statusRespostaErro}");
-                                                string nomeArquivo = @"c:\Log\" + DateTimeOffset.Now.ToString("ddMMyyyy") + ".log";
+                                                string nomeArquivo = @"C:\Log\" + DateTimeOffset.Now.ToString("ddMMyyyy") + ".log";
                                                 StreamWriter writer = new StreamWriter(nomeArquivo);
                                                 writer.WriteLine($"Data: {DateTimeOffset.Now.ToString("dd/MM/yyyy HH:mm:ss")}" + " " + $"Log Erro - Pré-Faturamento: {pref.Numero}" + " - " + $"Status: {(int)statusRespostaErro}" + " - " + $"{statusRespostaErro}" + " " + $"{PostErroFat}");
                                                 writer.Close();
@@ -171,15 +186,22 @@ namespace FaturamentoAutomatico
                                         {
                                             //Verificando a pasta de Log. 
                                             Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData);
-                                            string path = @"c:\Log\" + DateTimeOffset.Now.ToString("ddMMyyyy") + ".log";
+                                            string path = @"C:\Log\" + DateTimeOffset.Now.ToString("ddMMyyyy") + ".log";
 
                                             //Verifica se o arquivo de Log não existe e inclui as informações.
                                             if (!File.Exists(path))
                                             {
+                                                DirectoryInfo dir = new DirectoryInfo(pastalog);
+
+                                                foreach (FileInfo fi in dir.GetFiles())
+                                                {
+                                                    fi.Delete();
+                                                }
+
                                                 var resposta3 = (HttpWebResponse)e1.Response;
                                                 Console.WriteLine($"Errorcode: {(int)resposta3.StatusCode}" + " - " + $"{resposta3.StatusDescription.ToString()}");
 
-                                                string nomeArquivo = @"c:\Log\" + DateTimeOffset.Now.ToString("ddMMyyyy") + ".log";
+                                                string nomeArquivo = @"C:\Log\" + DateTimeOffset.Now.ToString("ddMMyyyy") + ".log";
                                                 StreamWriter writer = new StreamWriter(nomeArquivo);
                                                 writer.WriteLine($"Data: {DateTimeOffset.Now.ToString("dd/MM/yyyy HH:mm:ss")}" + " " + $"(Codigo Erro: {(int)resposta3.StatusCode})" + " " + $"(Status: {e1.Message})");
                                                 writer.Close();
@@ -197,7 +219,6 @@ namespace FaturamentoAutomatico
                                             }
                                         }
                                     }
-
                                     respostaErr.Close();
                                 }
 
@@ -207,14 +228,21 @@ namespace FaturamentoAutomatico
                             {
                                 // Verificando a pasta de Log. 
                                 Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData);
-                                string path = @"c:\Log\" + DateTimeOffset.Now.ToString("ddMMyyyy") + ".log";
+                                string path = @"C:\Log\" + DateTimeOffset.Now.ToString("ddMMyyyy") + ".log";
 
                                 //Verifica se o arquivo de Log não existe e inclui as informações.
                                 if (!File.Exists(path))
                                 {
+                                    DirectoryInfo dir = new DirectoryInfo(pastalog);
+
+                                    foreach (FileInfo fi in dir.GetFiles())
+                                    {
+                                        fi.Delete();
+                                    }
+
                                     Console.WriteLine("Error: {0}", e.Status);
 
-                                    string nomeArquivo1 = @"c:\Log\" + DateTimeOffset.Now.ToString("ddMMyyyy") + ".log";
+                                    string nomeArquivo1 = @"C:\Log\" + DateTimeOffset.Now.ToString("ddMMyyyy") + ".log";
                                     StreamWriter writer1 = new StreamWriter(nomeArquivo1);
                                     writer1.WriteLine($"Data: {DateTimeOffset.Now.ToString("dd/MM/yyyy HH:mm:ss")}" + " " + $"(Erro: {e.Message})" + " " + $"(Status: {e.Status})");
                                     writer1.Close();
@@ -230,6 +258,7 @@ namespace FaturamentoAutomatico
                             }
                         }
                     }
+                    streamDados.Dispose();
                 }
             }
             //Recebida exceção da API do Millennium. 
@@ -240,15 +269,22 @@ namespace FaturamentoAutomatico
                 {
                     //Verificando a pasta de Log. 
                     Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData);
-                    string path = @"c:\Log\" + DateTimeOffset.Now.ToString("ddMMyyyy") + ".log";
+                    string path = @"C:\Log\" + DateTimeOffset.Now.ToString("ddMMyyyy") + ".log";
 
                     //Verifica se o arquivo de Log não existe e inclui as informações.
                     if (!File.Exists(path))
                     {
+                        DirectoryInfo dir = new DirectoryInfo(pastalog);
+
+                        foreach (FileInfo fi in dir.GetFiles())
+                        {
+                            fi.Delete();
+                        }
+
                         var resposta2 = (HttpWebResponse)e.Response;
                         Console.WriteLine($"Errorcode: {(int)resposta2.StatusCode}" + " - " + $"{resposta2.StatusDescription.ToString()}");
 
-                        string nomeArquivo = @"c:\Log\" + DateTimeOffset.Now.ToString("ddMMyyyy") + ".log";
+                        string nomeArquivo = @"C:\Log\" + DateTimeOffset.Now.ToString("ddMMyyyy") + ".log";
                         StreamWriter writer = new StreamWriter(nomeArquivo);
                         writer.WriteLine($"Data: {DateTimeOffset.Now.ToString("dd/MM/yyyy HH:mm:ss")}" + " " + $"(Codigo Erro: {(int)resposta2.StatusCode})" + " " + $"(Status: {e.Message})");
                         writer.Close();
@@ -270,13 +306,20 @@ namespace FaturamentoAutomatico
                 {
                     //Verificando a pasta de Log. 
                     Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData);
-                    string path = @"c:\Log\" + DateTimeOffset.Now.ToString("ddMMyyyy") + ".log";
+                    string path = @"C:\Log\" + DateTimeOffset.Now.ToString("ddMMyyyy") + ".log";
 
                     //Verifica se o arquivo de Log não existe e inclui as informações.
                     if (!File.Exists(path))
                     {
+                        DirectoryInfo dir = new DirectoryInfo(pastalog);
+
+                        foreach (FileInfo fi in dir.GetFiles())
+                        {
+                            fi.Delete();
+                        }
+
                         Console.WriteLine("Error: {0}", e.Status);
-                        string nomeArquivo = @"c:\Log\" + DateTimeOffset.Now.ToString("ddMMyyyy") + ".log";
+                        string nomeArquivo = @"C:\Log\" + DateTimeOffset.Now.ToString("ddMMyyyy") + ".log";
                         StreamWriter writer = new StreamWriter(nomeArquivo);
                         writer.WriteLine($"Data: {DateTimeOffset.Now.ToString("dd/MM/yyyy HH:mm:ss")}" + " " + $"(Erro: {e.Message})" + " " + $"(Status: {e.Status})");
                         writer.Close();
