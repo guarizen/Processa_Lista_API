@@ -40,6 +40,7 @@ namespace FaturamentoAutomatico
                         //Comunicando a API de Faturamento do Millennium.
                         try
                         {
+                            //Consultando API para Envio do Faturamento
                             HttpWebRequest request = (HttpWebRequest)WebRequest.Create("http://189.113.4.250:888/api/millenium_log/picking/faturar");
                             request.Method = "POST";
                             request.ContentType = "application/json";
@@ -98,6 +99,137 @@ namespace FaturamentoAutomatico
                                 using (StreamWriter sw = File.AppendText(path))
                                 {
                                     sw.WriteLine($"Data: {DateTimeOffset.Now.ToString("dd/MM/yyyy HH:mm:ss")}" + " - " + $"Status: {(int)statusCodigo}" + " - " + $"Numero Pre-faturamento: {pref.Numero}" + " - " + $"Retorno Millennium: {statusCodigo}");
+                                }
+                            }
+                            try
+                            {
+                                //Consultando API para Envio da Confirmação de Faturamento
+                                HttpWebRequest requestEnv = (HttpWebRequest)WebRequest.Create("http://189.113.4.250:888/api/millenium!pillow/prefaturamentos/faturado");
+                                requestEnv.Method = "POST";
+                                requestEnv.ContentType = "application/json";
+                                requestEnv.Headers.Add("Authorization", $"Basic YWRtaW5pc3RyYXRvcjp2dGFUUFJAMjAxOSoq");
+                                requestEnv.UserAgent = "RequisicaoAPIPOST";
+                                requestEnv.Timeout = 1300000;
+                                ServicePointManager.SecurityProtocol = SecurityProtocolType.Tls12 | SecurityProtocolType.Tls11 | SecurityProtocolType.Tls;
+
+                                //Enviando a Confirmação de Faturado
+                                using (var streamWriter = new StreamWriter(requestEnv.GetRequestStream()))
+                                {
+                                    var PostPrefatEnv = JsonConvert.SerializeObject(pref.Prefaturamento);
+
+                                    var DadosPostEnv = "{" + "\"prefaturamento\"" + ":" + PostPrefatEnv + "}";
+
+                                    streamWriter.Write(DadosPostEnv);
+
+                                }
+
+                                //Comunicando com a API do Millennium Enviando a Confirmação de Faturamento (Ag. Retorno)
+                                using (var respostaPostFat = requestEnv.GetResponse())
+                                {
+                                    var streamPostFat = respostaPostFat.GetResponseStream();
+                                    StreamReader readerPostFat = new StreamReader(streamPostFat);
+                                    object objResponsePost = readerPostFat.ReadToEnd();
+                                    var statusResposta = ((System.Net.HttpWebResponse)respostaPostFat).StatusCode;
+                                    var postFat = JsonConvert.DeserializeObject<Post>(objResponsePost.ToString());
+
+                                    Console.WriteLine($"Envio Faturamento Confirmado: {pref.Numero}" + " - " + $"Status: {(int)statusResposta}" + " - " + $"{statusResposta}");
+                                    streamPostFat.Dispose();
+                                }
+                                //Verificando a pasta de Log. 
+                                Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData);
+                                string pathLogFat = @"C:\Log\" + DateTimeOffset.Now.ToString("ddMMyyyy") + ".log";
+
+                                //Verifica se o arquivo de Log não existe e inclui as informações.
+                                if (!File.Exists(pathLogFat))
+                                {
+                                    DirectoryInfo dir = new DirectoryInfo(pastalog);
+
+                                    foreach (FileInfo fi in dir.GetFiles())
+                                    {
+                                        fi.Delete();
+                                    }
+
+                                    string nomeArquivo1 = @"C:\Log\" + DateTimeOffset.Now.ToString("ddMMyyyy") + ".log";
+                                    StreamWriter writer1 = new StreamWriter(nomeArquivo1);
+                                    writer1.WriteLine($"Data: {DateTimeOffset.Now.ToString("dd/MM/yyyy HH:mm:ss")}" + " - " + $"Status: {(int)statusCodigo}" + " - " + $"Pre-faturamento: {pref.Numero}" + " - " + $"Confirmação Faturado: {statusCodigo}");
+                                    writer1.Close();
+
+                                }
+                                //Verifica se o arquivo de Log já existe e inclui as informações.
+                                else
+                                {
+                                    using (StreamWriter sw = File.AppendText(pathLogFat))
+                                    {
+                                        sw.WriteLine($"Data: {DateTimeOffset.Now.ToString("dd/MM/yyyy HH:mm:ss")}" + " - " + $"Status: {(int)statusCodigo}" + " - " + $"Pre-faturamento: {pref.Numero}" + " - " + $"Confirmação Faturado: {statusCodigo}");
+                                    }
+                                }
+                            }
+                            //Erro no retorno da API de Confirmação de Faturamento
+                            catch(WebException eFat)
+                            {
+                                if (eFat.Status == WebExceptionStatus.ProtocolError)
+                                {
+                                    // Verificando a pasta de Log. 
+                                    Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData);
+                                    string pathErroFat = @"C:\Log\" + DateTimeOffset.Now.ToString("ddMMyyyy") + ".log";
+
+                                    //Verifica se o arquivo de Log não existe e inclui as informações.
+                                    if (!File.Exists(pathErroFat))
+                                    {
+                                        DirectoryInfo dir = new DirectoryInfo(pastalog);
+
+                                        foreach (FileInfo fi in dir.GetFiles())
+                                        {
+                                            fi.Delete();
+                                        }
+
+                                        Console.WriteLine("Error: {0}", eFat.Status);
+
+                                        string nomeArquivoErrFat = @"C:\Log\" + DateTimeOffset.Now.ToString("ddMMyyyy") + ".log";
+                                        StreamWriter writer1 = new StreamWriter(nomeArquivoErrFat);
+                                        writer1.WriteLine($"Data: {DateTimeOffset.Now.ToString("dd/MM/yyyy HH:mm:ss")}" + " " + $"(Erro: {eFat.Message})" + " " + $"(Status: {eFat.Status})");
+                                        writer1.Close();
+                                    }
+                                    //Verifica se o arquivo de Log já existe e inclui as informações.
+                                    else
+                                    {
+                                        using (StreamWriter sw = File.AppendText(path))
+                                        {
+                                            sw.WriteLine($"Data: {DateTimeOffset.Now.ToString("dd/MM/yyyy HH:mm:ss")}" + " " + $"(Erro: {eFat.Message})" + " " + $"(Status: {eFat.Status})");
+                                        }
+                                    }
+                                }
+                                else
+                                {
+                                    // Verificando a pasta de Log. 
+                                    Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData);
+                                    string pathErroFat = @"C:\Log\" + DateTimeOffset.Now.ToString("ddMMyyyy") + ".log";
+
+                                    //Verifica se o arquivo de Log não existe e inclui as informações.
+                                    if (!File.Exists(pathErroFat))
+                                    {
+                                        DirectoryInfo dir = new DirectoryInfo(pastalog);
+
+                                        foreach (FileInfo fi in dir.GetFiles())
+                                        {
+                                            fi.Delete();
+                                        }
+
+                                        Console.WriteLine("Error: {0}", eFat.Status);
+
+                                        string nomeArquivoErrFat = @"C:\Log\" + DateTimeOffset.Now.ToString("ddMMyyyy") + ".log";
+                                        StreamWriter writer1 = new StreamWriter(nomeArquivoErrFat);
+                                        writer1.WriteLine($"Data: {DateTimeOffset.Now.ToString("dd/MM/yyyy HH:mm:ss")}" + " " + $"(Erro: {eFat.Message})" + " " + $"(Status: {eFat.Status})");
+                                        writer1.Close();
+                                    }
+                                    //Verifica se o arquivo de Log já existe e inclui as informações.
+                                    else
+                                    {
+                                        using (StreamWriter sw = File.AppendText(path))
+                                        {
+                                            sw.WriteLine($"Data: {DateTimeOffset.Now.ToString("dd/MM/yyyy HH:mm:ss")}" + " " + $"(Erro: {eFat.Message})" + " " + $"(Status: {eFat.Status})");
+                                        }
+                                    }
                                 }
                             }
                         }

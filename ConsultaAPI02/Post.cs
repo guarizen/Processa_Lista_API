@@ -9,6 +9,6 @@ namespace FaturamentoAutomatico
     class Post
     {
             public string Numero { get; set; }
-
+            public int Prefaturamento { get; set; }
     }
 }

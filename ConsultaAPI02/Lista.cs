@@ -22,6 +22,9 @@ namespace FaturamentoAutomatico
     {
         [JsonProperty("numero")]
         public string Numero { get; set; }
+
+        [JsonProperty("prefaturamento")]
+        public int Prefaturamento { get; set; }
     }
 
     public partial class ListaPrefaturamentos
