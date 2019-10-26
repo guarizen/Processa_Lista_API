@@ -142,6 +142,7 @@ namespace FaturamentoAutomatico
                                 //Verifica se o arquivo de Log não existe e inclui as informações.
                                 if (!File.Exists(pathLogFat))
                                 {
+                                    //Listar todos os arquivos na pasta de Log e Apagar.
                                     DirectoryInfo dir = new DirectoryInfo(pastalog);
 
                                     foreach (FileInfo fi in dir.GetFiles())
@@ -149,6 +150,7 @@ namespace FaturamentoAutomatico
                                         fi.Delete();
                                     }
 
+                                    //Criar o arquivo de Log.
                                     string nomeArquivo1 = @"C:\Log\" + DateTimeOffset.Now.ToString("ddMMyyyy") + ".log";
                                     StreamWriter writer1 = new StreamWriter(nomeArquivo1);
                                     writer1.WriteLine($"Data: {DateTimeOffset.Now.ToString("dd/MM/yyyy HH:mm:ss")}" + " - " + $"Status: {(int)statusCodigo}" + " - " + $"Pre-faturamento: {pref.Numero}" + " - " + $"Confirmação Faturado: {statusCodigo}");
@@ -158,6 +160,7 @@ namespace FaturamentoAutomatico
                                 //Verifica se o arquivo de Log já existe e inclui as informações.
                                 else
                                 {
+                                    //Incluir Log.
                                     using (StreamWriter sw = File.AppendText(pathLogFat))
                                     {
                                         sw.WriteLine($"Data: {DateTimeOffset.Now.ToString("dd/MM/yyyy HH:mm:ss")}" + " - " + $"Status: {(int)statusCodigo}" + " - " + $"Pre-faturamento: {pref.Numero}" + " - " + $"Confirmação Faturado: {statusCodigo}");
@@ -176,6 +179,7 @@ namespace FaturamentoAutomatico
                                     //Verifica se o arquivo de Log não existe e inclui as informações.
                                     if (!File.Exists(pathErroFat))
                                     {
+                                        //Listar todos os arquivos na pasta de Log e Apagar.
                                         DirectoryInfo dir = new DirectoryInfo(pastalog);
 
                                         foreach (FileInfo fi in dir.GetFiles())
@@ -185,6 +189,7 @@ namespace FaturamentoAutomatico
 
                                         Console.WriteLine("Error: {0}", eFat.Status);
 
+                                        //Incluir Log.
                                         string nomeArquivoErrFat = @"C:\Log\" + DateTimeOffset.Now.ToString("ddMMyyyy") + ".log";
                                         StreamWriter writer1 = new StreamWriter(nomeArquivoErrFat);
                                         writer1.WriteLine($"Data: {DateTimeOffset.Now.ToString("dd/MM/yyyy HH:mm:ss")}" + " " + $"(Erro: {eFat.Message})" + " " + $"(Status: {eFat.Status})");
@@ -193,6 +198,7 @@ namespace FaturamentoAutomatico
                                     //Verifica se o arquivo de Log já existe e inclui as informações.
                                     else
                                     {
+                                        //Incluir Log.
                                         using (StreamWriter sw = File.AppendText(path))
                                         {
                                             sw.WriteLine($"Data: {DateTimeOffset.Now.ToString("dd/MM/yyyy HH:mm:ss")}" + " " + $"(Erro: {eFat.Message})" + " " + $"(Status: {eFat.Status})");
@@ -208,6 +214,7 @@ namespace FaturamentoAutomatico
                                     //Verifica se o arquivo de Log não existe e inclui as informações.
                                     if (!File.Exists(pathErroFat))
                                     {
+                                        //Listar todos os arquivos na pasta de Log e Apagar.
                                         DirectoryInfo dir = new DirectoryInfo(pastalog);
 
                                         foreach (FileInfo fi in dir.GetFiles())
@@ -217,6 +224,7 @@ namespace FaturamentoAutomatico
 
                                         Console.WriteLine("Error: {0}", eFat.Status);
 
+                                        //Incluir Log.
                                         string nomeArquivoErrFat = @"C:\Log\" + DateTimeOffset.Now.ToString("ddMMyyyy") + ".log";
                                         StreamWriter writer1 = new StreamWriter(nomeArquivoErrFat);
                                         writer1.WriteLine($"Data: {DateTimeOffset.Now.ToString("dd/MM/yyyy HH:mm:ss")}" + " " + $"(Erro: {eFat.Message})" + " " + $"(Status: {eFat.Status})");
@@ -225,6 +233,7 @@ namespace FaturamentoAutomatico
                                     //Verifica se o arquivo de Log já existe e inclui as informações.
                                     else
                                     {
+                                        //Incluir Log.
                                         using (StreamWriter sw = File.AppendText(path))
                                         {
                                             sw.WriteLine($"Data: {DateTimeOffset.Now.ToString("dd/MM/yyyy HH:mm:ss")}" + " " + $"(Erro: {eFat.Message})" + " " + $"(Status: {eFat.Status})");
@@ -286,6 +295,7 @@ namespace FaturamentoAutomatico
                                             //Verifica se o arquivo de Log não existe e inclui as informações.
                                             if (!File.Exists(path))
                                             {
+                                                //Listar todos os arquivos na pasta de Log e Apagar.
                                                 DirectoryInfo dir = new DirectoryInfo(pastalog);
 
                                                 foreach (FileInfo fi in dir.GetFiles())
@@ -293,6 +303,7 @@ namespace FaturamentoAutomatico
                                                     fi.Delete();
                                                 }
 
+                                                //Incluir Log.
                                                 Console.WriteLine($"Log Erro - Faturamento: {pref.Numero}" + " - " + $"Status: {(int)statusRespostaErro}" + " - " + $"{statusRespostaErro}");
                                                 string nomeArquivo = @"C:\Log\" + DateTimeOffset.Now.ToString("ddMMyyyy") + ".log";
                                                 StreamWriter writer = new StreamWriter(nomeArquivo);
@@ -302,6 +313,7 @@ namespace FaturamentoAutomatico
                                             //Verifica se o arquivo de Log já existe e inclui as informações.
                                             else
                                             {
+                                                //Incluir Log.
                                                 using (StreamWriter sw = File.AppendText(path))
                                                 {
                                                     Console.WriteLine($"Log Erro - Faturamento: {pref.Numero}" + " - " + $"Status: {(int)statusRespostaErro}" + " - " + $"{statusRespostaErro}");
@@ -323,6 +335,7 @@ namespace FaturamentoAutomatico
                                             //Verifica se o arquivo de Log não existe e inclui as informações.
                                             if (!File.Exists(path))
                                             {
+                                                //Listar todos os arquivos na pasta de Log e Apagar.
                                                 DirectoryInfo dir = new DirectoryInfo(pastalog);
 
                                                 foreach (FileInfo fi in dir.GetFiles())
@@ -333,6 +346,7 @@ namespace FaturamentoAutomatico
                                                 var resposta3 = (HttpWebResponse)e1.Response;
                                                 Console.WriteLine($"Errorcode: {(int)resposta3.StatusCode}" + " - " + $"{resposta3.StatusDescription.ToString()}");
 
+                                                //Incluir Log.
                                                 string nomeArquivo = @"C:\Log\" + DateTimeOffset.Now.ToString("ddMMyyyy") + ".log";
                                                 StreamWriter writer = new StreamWriter(nomeArquivo);
                                                 writer.WriteLine($"Data: {DateTimeOffset.Now.ToString("dd/MM/yyyy HH:mm:ss")}" + " " + $"(Codigo Erro: {(int)resposta3.StatusCode})" + " " + $"(Status: {e1.Message})");
@@ -341,6 +355,7 @@ namespace FaturamentoAutomatico
                                             //Verifica se o arquivo de Log já existe e inclui as informações.
                                             else
                                             {
+                                                //Incluir Log.
                                                 using (StreamWriter sw = File.AppendText(path))
                                                 {
                                                     var resposta3 = (HttpWebResponse)e1.Response;
@@ -365,6 +380,7 @@ namespace FaturamentoAutomatico
                                 //Verifica se o arquivo de Log não existe e inclui as informações.
                                 if (!File.Exists(path))
                                 {
+                                    //Listar todos os arquivos na pasta de Log e Apagar.
                                     DirectoryInfo dir = new DirectoryInfo(pastalog);
 
                                     foreach (FileInfo fi in dir.GetFiles())
@@ -374,6 +390,7 @@ namespace FaturamentoAutomatico
 
                                     Console.WriteLine("Error: {0}", e.Status);
 
+                                    //Incluir Log.
                                     string nomeArquivo1 = @"C:\Log\" + DateTimeOffset.Now.ToString("ddMMyyyy") + ".log";
                                     StreamWriter writer1 = new StreamWriter(nomeArquivo1);
                                     writer1.WriteLine($"Data: {DateTimeOffset.Now.ToString("dd/MM/yyyy HH:mm:ss")}" + " " + $"(Erro: {e.Message})" + " " + $"(Status: {e.Status})");
@@ -382,6 +399,7 @@ namespace FaturamentoAutomatico
                                 //Verifica se o arquivo de Log já existe e inclui as informações.
                                 else
                                 {
+                                    //Incluir Log.
                                     using (StreamWriter sw = File.AppendText(path))
                                     {
                                         sw.WriteLine($"Data: {DateTimeOffset.Now.ToString("dd/MM/yyyy HH:mm:ss")}" + " " + $"(Erro: {e.Message})" + " " + $"(Status: {e.Status})");
@@ -406,6 +424,7 @@ namespace FaturamentoAutomatico
                     //Verifica se o arquivo de Log não existe e inclui as informações.
                     if (!File.Exists(path))
                     {
+                        //Listar todos os arquivos na pasta de Log e Apagar.
                         DirectoryInfo dir = new DirectoryInfo(pastalog);
 
                         foreach (FileInfo fi in dir.GetFiles())
@@ -416,6 +435,7 @@ namespace FaturamentoAutomatico
                         var resposta2 = (HttpWebResponse)e.Response;
                         Console.WriteLine($"Errorcode: {(int)resposta2.StatusCode}" + " - " + $"{resposta2.StatusDescription.ToString()}");
 
+                        //Incluir Log.
                         string nomeArquivo = @"C:\Log\" + DateTimeOffset.Now.ToString("ddMMyyyy") + ".log";
                         StreamWriter writer = new StreamWriter(nomeArquivo);
                         writer.WriteLine($"Data: {DateTimeOffset.Now.ToString("dd/MM/yyyy HH:mm:ss")}" + " " + $"(Codigo Erro: {(int)resposta2.StatusCode})" + " " + $"(Status: {e.Message})");
@@ -424,6 +444,7 @@ namespace FaturamentoAutomatico
                     //Verifica se o arquivo de Log já existe e inclui as informações.
                     else
                     {
+                        //Incluir Log.
                         using (StreamWriter sw = File.AppendText(path))
                         {
                             var resposta2 = (HttpWebResponse)e.Response;
@@ -443,6 +464,7 @@ namespace FaturamentoAutomatico
                     //Verifica se o arquivo de Log não existe e inclui as informações.
                     if (!File.Exists(path))
                     {
+                        //Listar todos os arquivos na pasta de Log e Apagar.
                         DirectoryInfo dir = new DirectoryInfo(pastalog);
 
                         foreach (FileInfo fi in dir.GetFiles())
@@ -450,6 +472,7 @@ namespace FaturamentoAutomatico
                             fi.Delete();
                         }
 
+                        //Incluir Log.
                         Console.WriteLine("Error: {0}", e.Status);
                         string nomeArquivo = @"C:\Log\" + DateTimeOffset.Now.ToString("ddMMyyyy") + ".log";
                         StreamWriter writer = new StreamWriter(nomeArquivo);
@@ -459,6 +482,7 @@ namespace FaturamentoAutomatico
                     //Verifica se o arquivo de Log já existe e inclui as informações.
                     else
                     {
+                        //Incluir Log.
                         using (StreamWriter sw = File.AppendText(path))
                         {
                             sw.WriteLine($"Data: {DateTimeOffset.Now.ToString("dd/MM/yyyy HH:mm:ss")}" + " " + $"(Erro: {e.Message})" + " " + $"(Status: {e.Status})");
