@@ -2,6 +2,7 @@
 using System.Net;
 using System.IO;
 using Newtonsoft.Json;
+using System.Configuration;
 
 namespace FaturamentoAutomatico
 {
@@ -9,6 +10,12 @@ namespace FaturamentoAutomatico
     {
         static void Main(string[] args)
         {
+            var ConnectLista = ConfigurationManager.AppSettings["ConnectLista"];
+            var ConnectFaturar = ConfigurationManager.AppSettings["ConnectFaturar"];
+            var ConnectFaturado = ConfigurationManager.AppSettings["ConnectFaturado"];
+            var ConnectErroFat = ConfigurationManager.AppSettings["ConnectErroFat"];
+            var Authorization = ConfigurationManager.AppSettings["Authorization"];
+   
             string pastalog = @"C:\Log\";
             if (!File.Exists(pastalog))
             {
@@ -18,11 +25,12 @@ namespace FaturamentoAutomatico
             //Consulta API do Millennium, Buscando as informações da lista a faturar.
             try
             {
-                var requisicaoWeb = WebRequest.CreateHttp("http://189.113.4.250:888/api/millenium!pillow/prefaturamentos/lista_fat_auto?$format=json");
+                var requisicaoWeb = WebRequest.CreateHttp($"{ConnectLista}");
                 requisicaoWeb.Method = "GET";
-                requisicaoWeb.Headers.Add("Authorization", $"Basic YWRtaW5pc3RyYXRvcjp2dGFUUFJAMjAxOSoq");
+                requisicaoWeb.Headers.Add("Authorization", $"{Authorization}");
                 requisicaoWeb.UserAgent = "RequisicaoAPIGETPrefat";
                 requisicaoWeb.Timeout = 1300000;
+                ServicePointManager.SecurityProtocol = SecurityProtocolType.Tls12 | SecurityProtocolType.Tls11 | SecurityProtocolType.Tls;
 
                 //Retorno da API do Millennium com a Lista a Faturar.
                 using (var resposta = requisicaoWeb.GetResponse())
@@ -41,10 +49,10 @@ namespace FaturamentoAutomatico
                         try
                         {
                             //Consultando API para Envio do Faturamento
-                            HttpWebRequest request = (HttpWebRequest)WebRequest.Create("http://189.113.4.250:888/api/millenium_log/picking/faturar");
+                            HttpWebRequest request = (HttpWebRequest)WebRequest.Create($"{ConnectFaturar}");
                             request.Method = "POST";
                             request.ContentType = "application/json";
-                            request.Headers.Add("Authorization", $"Basic YWRtaW5pc3RyYXRvcjp2dGFUUFJAMjAxOSoq");
+                            request.Headers.Add("Authorization", $"{Authorization}");
                             request.UserAgent = "RequisicaoAPIPOST";
                             request.Timeout = 1300000;
                             ServicePointManager.SecurityProtocol = SecurityProtocolType.Tls12 | SecurityProtocolType.Tls11 | SecurityProtocolType.Tls;
@@ -104,10 +112,10 @@ namespace FaturamentoAutomatico
                             try
                             {
                                 //Consultando API para Envio da Confirmação de Faturamento
-                                HttpWebRequest requestEnv = (HttpWebRequest)WebRequest.Create("http://189.113.4.250:888/api/millenium!pillow/prefaturamentos/faturado");
+                                HttpWebRequest requestEnv = (HttpWebRequest)WebRequest.Create($"{ConnectFaturado}");
                                 requestEnv.Method = "POST";
                                 requestEnv.ContentType = "application/json";
-                                requestEnv.Headers.Add("Authorization", $"Basic YWRtaW5pc3RyYXRvcjp2dGFUUFJAMjAxOSoq");
+                                requestEnv.Headers.Add("Authorization", $"{Authorization}");
                                 requestEnv.UserAgent = "RequisicaoAPIPOST";
                                 requestEnv.Timeout = 1300000;
                                 ServicePointManager.SecurityProtocol = SecurityProtocolType.Tls12 | SecurityProtocolType.Tls11 | SecurityProtocolType.Tls;
@@ -260,10 +268,10 @@ namespace FaturamentoAutomatico
                                     //Comunicando a API de Erro no Faturamento do Millennium.
                                     try
                                     {
-                                        HttpWebRequest request1 = (HttpWebRequest)WebRequest.Create("http://189.113.4.250:888/api/millenium!pillow/prefaturamentos/info_erro_faturamento");
+                                        HttpWebRequest request1 = (HttpWebRequest)WebRequest.Create($"{ConnectErroFat}");
                                         request1.Method = "POST";
                                         request1.ContentType = "application/json";
-                                        request1.Headers.Add("Authorization", $"Basic YWRtaW5pc3RyYXRvcjp2dGFUUFJAMjAxOSoq");
+                                        request1.Headers.Add("Authorization", $"{Authorization}");
                                         request1.UserAgent = "RequisicaoAPIPOST";
                                         request1.Timeout = 1300000;
                                         ServicePointManager.SecurityProtocol = SecurityProtocolType.Tls12 | SecurityProtocolType.Tls11 | SecurityProtocolType.Tls;
