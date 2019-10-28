@@ -11,6 +11,13 @@ namespace FaturamentoAutomatico
     {
         static void Main(string[] args)
         {
+            string pastalog = @"C:\Log\";
+            if (!File.Exists(pastalog))
+            {
+                //Criar Diretório de Log
+                Directory.CreateDirectory(pastalog);
+            }
+
             //Configurações do App.Config
             var ConnectLista = ConfigurationManager.AppSettings["ConnectLista"];
             var ConnectFaturar = ConfigurationManager.AppSettings["ConnectFaturar"];
@@ -33,13 +40,6 @@ namespace FaturamentoAutomatico
 
             if (hDid == ControlKey)
             {
-
-                string pastalog = @"C:\Log\";
-                if (!File.Exists(pastalog))
-                {
-                    //Criar Diretório de Log
-                    Directory.CreateDirectory(pastalog);
-                }
                 //Consulta API do Millennium, Buscando as informações da lista a faturar.
                 try
                 {
@@ -521,7 +521,7 @@ namespace FaturamentoAutomatico
             }
             else
             {
-                string pastalog = @"C:\Log\";
+                string pastalog2 = @"C:\Log\";
                 //Verificando a pasta de Log. 
                 Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData);
                 string path = @"C:\Log\" + DateTimeOffset.Now.ToString("ddMMyyyy") + ".log";
@@ -530,7 +530,7 @@ namespace FaturamentoAutomatico
                 if (!File.Exists(path))
                 {
                     //Listar todos os arquivos na pasta de Log e Apagar.
-                    DirectoryInfo dir = new DirectoryInfo(pastalog);
+                    DirectoryInfo dir = new DirectoryInfo(pastalog2);
 
                     foreach (FileInfo fi in dir.GetFiles())
                     {
@@ -538,10 +538,10 @@ namespace FaturamentoAutomatico
                     }
 
                     //Incluir Log.
-                    Console.WriteLine("Error:A Chave Control no arquivo App.Config Invalída!");
+                    Console.WriteLine("Error: ControlKey no Arquivo de Configuração está Inválida!");
                     string nomeArquivo = @"C:\Log\" + DateTimeOffset.Now.ToString("ddMMyyyy") + ".log";
                     StreamWriter writer = new StreamWriter(nomeArquivo);
-                    writer.WriteLine($"Data: {DateTimeOffset.Now.ToString("dd/MM/yyyy HH:mm:ss")}" + " " + $"Erro: A Chave Control no arquivo App.Config Inválida!");
+                    writer.WriteLine($"Data: {DateTimeOffset.Now.ToString("dd/MM/yyyy HH:mm:ss")}" + " " + $"Erro: ControlKey no Arquivo de Configuração está Inválida!");
                     writer.Close();
                 }
                 //Verifica se o arquivo de Log já existe e inclui as informações.
@@ -550,7 +550,7 @@ namespace FaturamentoAutomatico
                     //Incluir Log.
                     using (StreamWriter sw = File.AppendText(path))
                     {
-                        sw.WriteLine($"Data: {DateTimeOffset.Now.ToString("dd/MM/yyyy HH:mm:ss")}" + " " + $"Erro: A Chave Control no arquivo App.Config Inválida!");
+                        sw.WriteLine($"Data: {DateTimeOffset.Now.ToString("dd/MM/yyyy HH:mm:ss")}" + " " + $"Erro: ControlKey no Arquivo de Configuração está Inválida!");
                     }
                 }
             }
