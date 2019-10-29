@@ -26,7 +26,7 @@ namespace FaturamentoAutomatico
             var Authorization = ConfigurationManager.AppSettings["Authorization"];
             var ControlKey = ConfigurationManager.AppSettings["ControlKey"];
 
-            //Validação de Acesso ao Programa
+            //Validação de Acesso ao Programa, Control Key.
             var hDid = string.Empty;
             var mc = new ManagementClass("Win32_LogicalDisk");
             var moc = mc.GetInstances();
@@ -37,10 +37,15 @@ namespace FaturamentoAutomatico
                 hDid += (string)mo.Properties["VolumeSerialNumber"].Value;
 
             }
+            //Adicionando String de Att. na Validação da Control Key.
+            if(hDid != null)
+            {
+                hDid += "A9679I0";
+            }
 
             if (hDid == ControlKey)
             {
-                //Consulta API do Millennium, Buscando as informações da lista a faturar.
+                //Consulta API do Millennium, Buscando as Informações da Lista a Faturar.
                 try
                 {
                     var requisicaoWeb = WebRequest.CreateHttp($"{ConnectLista}"+ "?$format=json");
